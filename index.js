@@ -38,16 +38,49 @@ app.get('/citas', async (req, res) => {
 
 // obtener citas de un usuario
 app.get('/citas/usuario', async (req, res) => {
-    try {
-      const { correoIn } = req.query;
-      const citasRef = db.ref('citas');
-      const snapshot = await citasRef.orderByChild('correoIn').equalTo(correoIn).once('value');
-      const citas = snapshot.val();
-      res.status(200).json(citas);
-    } catch (error) {
-      res.status(500).json({ error: error.message });
+  try {
+    const { nombreIn } = req.query;
+    console.log('Nombre del usuario recibido:', nombreIn);
+    if (!nombreIn) {
+      return res.status(400).json({ error: 'El nombre del usuario es obligatorio' });
     }
-  });
+    const citasRef = db.ref('citas');
+    const snapshot = await citasRef.orderByChild('nombreIn').equalTo(nombreIn).once('value');
+    const citas = snapshot.val();
+    console.log('Citas encontradas:', citas);
+    if (citas) {
+      res.status(200).json(citas);
+    } else {
+      res.status(404).json({ message: 'No se encontraron citas para el usuario' });
+    }
+  } catch (error) {
+    console.error('Error al obtener citas por usuario:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// obtener citas de un telefono
+app.get('/citas/telefono', async (req, res) => {
+  try {
+    const { telefonoIn } = req.query;
+    console.log('Telefono recibido:', telefonoIn);
+    if (!telefonoIn) {
+      return res.status(400).json({ error: 'El telefono es obligatorio' });
+    }
+    const citasRef = db.ref('citas');
+    const snapshot = await citasRef.orderByChild('telefonoIn').equalTo(telefonoIn).once('value');
+    const citas = snapshot.val();
+    console.log('Citas encontradas:', citas);
+    if (citas) {
+      res.status(200).json(citas);
+    } else {
+      res.status(404).json({ message: 'No se encontraron citas para el usuario' });
+    }
+  } catch (error) {
+    console.error('Error al obtener citas por usuario:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
 
   // obtener citas entre fechas
   app.get('/citas/rango', async (req, res) => {
